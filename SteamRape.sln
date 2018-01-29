@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamRape", "SteamRape\SteamRape.csproj", "{DB3B2282-AC74-4208-B6F6-8451E6059728}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB3B2282-AC74-4208-B6F6-8451E6059728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB3B2282-AC74-4208-B6F6-8451E6059728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB3B2282-AC74-4208-B6F6-8451E6059728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB3B2282-AC74-4208-B6F6-8451E6059728}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B3351F0-0F37-4D96-9174-E6ED642708E9}
+	EndGlobalSection
+EndGlobal
