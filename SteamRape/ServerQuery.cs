@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,21 +18,20 @@ namespace SteamRape {
         public List<PlayerData> players = new List<PlayerData>();
 
         public byte[] generateQueryPacket() {
-            List<byte[]> toMerge = new List<byte[]>();
-
-            toMerge.Add(constructByteArray("ff:ff:ff:ff:49:11"));
-            toMerge.Add(System.Text.Encoding.UTF8.GetBytes(hostname));
-            toMerge.Add(new byte[] { 0x0 });
-            toMerge.Add(System.Text.Encoding.UTF8.GetBytes(mapname));
-            toMerge.Add(new byte[] { 0x0 });
-            toMerge.Add(System.Text.Encoding.UTF8.GetBytes(foldername));
-            toMerge.Add(new byte[] { 0x0 });
-            toMerge.Add(System.Text.Encoding.UTF8.GetBytes(gamename));
-            toMerge.Add(new byte[] { 0x0 });
-            toMerge.Add(new byte[] { BitConverter.GetBytes(appid)[0], BitConverter.GetBytes(appid)[1] });
-            toMerge.Add(new byte[] { playercount });
-            toMerge.Add(new byte[] { maxplayers });
-            toMerge.Add(new byte[] { botcount });
+            MemoryStream memstream = new MemoryStream();
+            memstream.write(constructByteArray("ff:ff:ff:ff:49:11"));
+            memstream.write(System.Text.Encoding.UTF8.GetBytes(hostname));
+            memstream.write(new byte[] { 0x0 });
+            memstream.write(System.Text.Encoding.UTF8.GetBytes(mapname));
+            memstream.write(new byte[] { 0x0 });
+            memstream.write(System.Text.Encoding.UTF8.GetBytes(foldername));
+            memstream.write(new byte[] { 0x0 });
+            memstream.write(System.Text.Encoding.UTF8.GetBytes(gamename));
+            memstream.write(new byte[] { 0x0 });
+            memstream.write(BitConverter.GetBytes(appid));
+            memstream.write(new byte[] { playercount });
+            memstream.write(new byte[] { maxplayers });
+            memstream.write(new byte[] { botcount });
 
             byte st = (byte)0;
             if (servertype == servertypes.DEDICATED)
@@ -41,7 +41,7 @@ namespace SteamRape {
             if (servertype == servertypes.SOURCETVRELAY)
                 st = (byte)'p';
 
-            toMerge.Add(new byte[] { st });
+            memstream.write(new byte[] { st });
 
             byte em = (byte)0;
 
@@ -52,11 +52,11 @@ namespace SteamRape {
             if (environment == environments.MAC)
                 em = (byte)'m';
 
-            toMerge.Add(new byte[] { em });
-            toMerge.Add(new byte[] { ((isPrivate) ? (byte)0x1 : (byte)0x0) });
-            toMerge.Add(new byte[] { ((isVAC) ? (byte)0x1 : (byte)0x0) });
+            memstream.write(new byte[] { em });
+            memstream.write(new byte[] { ((isPrivate) ? (byte)0x1 : (byte)0x0) });
+            memstream.write(new byte[] { ((isVAC) ? (byte)0x1 : (byte)0x0) });
 
-            return mergeByteArrays(toMerge);
+            return memstream.ToArray();
         }
 
         public static ServerQuery generateRandom() {
@@ -67,6 +67,7 @@ namespace SteamRape {
             sq.foldername = randomString();
             sq.playercount = randomByte();
             sq.maxplayers = randomByte();
+            sq.botcount = ((rnd.NextDouble() > 0.5) ? (byte)1 : (byte)0);
             sq.environment = (environments)rnd.Next(0,2);
             sq.servertype = (servertypes)rnd.Next(0, 2);
             sq.isPrivate = ((rnd.NextDouble() > 0.5) ? true : false);
@@ -75,15 +76,15 @@ namespace SteamRape {
         }
 
         public byte[] generatePlayerList() {
-            List<byte[]> toMerge = new List<byte[]>();
+            MemoryStream memstream = new MemoryStream();
+            memstream.write(constructByteArray("ff:ff:ff:ff:44"));
+            memstream.write(new byte[] { (byte)(players.ToArray().Length) });
 
-            toMerge.Add(constructByteArray("ff:ff:ff:ff:44"));
-            toMerge.Add(new byte[] { (byte)(players.ToArray().Length) });
             foreach(PlayerData data in players) {
-                toMerge.Add(data.generateByteArray());
+                memstream.write(data.generateByteArray());
             }
 
-            byte[] merged = mergeByteArrays(toMerge);
+            byte[] merged = memstream.ToArray();
             return merged;
         }
 
@@ -126,23 +127,11 @@ namespace SteamRape {
             return packet;
         }
 
-        private byte[] mergeByteArrays(List<byte[]> arrays) {
-            int neededLength = 0;
-            foreach (byte[] arr in arrays) {
-                neededLength += arr.Length;
-            }
+    }
 
-            byte[] merged = new byte[neededLength];
-
-            int count = 0;
-            foreach (byte[] arr in arrays) {
-                for (int i = 0; i < arr.Length; i++) {
-                    merged[count] = arr[i];
-                    count++;
-                }
-            }
-
-            return merged;
+    public static class MemoryStreamExtensions {
+        public static void write(this MemoryStream stream, byte[] buffer) {
+            stream.Write(buffer, 0, buffer.Length);
         }
     }
 }

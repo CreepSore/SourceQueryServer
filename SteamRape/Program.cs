@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 namespace SteamRape {
     class Program {
         static void Main(string[] args) {
+            MasterServerAuthenticator.authenticate(ServerQuery.generateRandom());
+
             ServerSystem ss = new ServerSystem();
             ss.start();
+
+            while(true) {
+
+            }
         }
     }
 }

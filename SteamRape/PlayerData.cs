@@ -12,6 +12,15 @@ namespace SteamRape {
         public int score;
         public float time;
 
+        public PlayerData() { }
+
+        public PlayerData(byte index, string name, int score, float time) {
+            this.index = index;
+            this.name = name;
+            this.score = score;
+            this.time = time;
+        }
+
         public byte[] generateByteArray() {
             List<byte[]> toMerge = new List<byte[]>();
             toMerge.Add(new byte[] { index });
